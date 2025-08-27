@@ -237,6 +237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order'])) {
                 <div class="d-flex justify-content-between">
                     <button type="submit" class="btn btn-success mt-2">Save Order</button>
                 <b class="text-warning">tip-(click and drag ↑  ↓ to move rows)</b>
+                <a href="data-pages/logout.php" class="btn btn-danger">Logout</a>
                 </div>
             </form>
         </div>

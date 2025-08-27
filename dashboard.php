@@ -113,7 +113,7 @@ while ($row = $submission_ids_result->fetch_assoc()) {
   <?php endforeach; ?>
 
 </div>
-
+ <a href="pages/data-pages/logout.php" class="btn btn-danger">Logout</a>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <div id="toastContainer"></div>
 <?php include "pages/data-pages/toast.php"; ?>

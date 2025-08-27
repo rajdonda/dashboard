@@ -1,5 +1,24 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+include "data-pages/db.php";
+
+// Redirect if user is already logged in
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+    if ($_SESSION['role'] === 'admin') {
+        header("Location: admin_dashboard.php");
+        exit();
+    } else {
+        header("Location: ../dashboard.php");
+        exit();
+    }
+}
+?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include "data-pages/db.php";
 
 password_hash("Admin123!", PASSWORD_DEFAULT);

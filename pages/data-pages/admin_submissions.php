@@ -1,5 +1,21 @@
 <?php
 session_start();
+include "data-pages/db.php";
+
+// Redirect if user is not logged in
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header("Location: login.php");
+    exit();
+}
+
+// Optional: restrict admin-only page
+if ($_SESSION['role'] !== 'admin') {
+    header("Location: ../dashboard.php"); // send non-admins to user dashboard
+    exit();
+}
+?>
+<?php
+session_start();
 include "db.php";
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'admin') {
