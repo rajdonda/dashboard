@@ -1,6 +1,10 @@
 <?php
 session_start();
 include "pages/data-pages/db.php";
+$toastMsg = $_SESSION['toastMsg'] ?? "";
+$toastType = $_SESSION['toastType'] ?? "";
+unset($_SESSION['toastMsg'], $_SESSION['toastType']);
+
 if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'user') {
     header("Location: pages/login.php");
     exit();
@@ -13,12 +17,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_form'])) {
     foreach ($_POST as $key => $value) {
         if (str_starts_with($key, 'field_')) {
             $field_id = intval(str_replace('field_', '', $key));
-            $stmt = $mysqli->prepare("INSERT INTO form_responses (user_id, field_id, response_value, submitted_at) VALUES (?, ?, ?, NOW())");
+            
+            $stmt = $mysqli->prepare("INSERT INTO user_submissions (user_id, field_id, value, created_at) VALUES (?, ?, ?, NOW())");
+            if (!$stmt) die("Prepare failed: " . $mysqli->error);
+            
             $stmt->bind_param("iis", $user_id, $field_id, $value);
-
-            $stmt->execute();
+            if (!$stmt->execute()) die("Execute failed: " . $stmt->error);
         }
     }
+
+    $_SESSION['toastMsg'] = "Form submitted successfully!";
+    $_SESSION['toastType'] = "success";
+
     header("Location: dashboard.php");
     exit();
 }
@@ -49,23 +59,8 @@ while ($row = $submission_ids_result->fetch_assoc()) {
 </head>
 <body>
 
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">Logo</a>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item dropdown px-5">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Account</a>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item text-success" href="#">Profile</a></li>
-          <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-</nav>
-
 <div class="container-fluid mt-3 px-5">
-  <h1>Welcome, <?= htmlspecialchars($_SESSION['user']); ?> 🎉</h1> 
+  <h1>Welcome To Dashboard, <?= htmlspecialchars($_SESSION['user']); ?> 🎉</h1> 
 
   <!-- Form Card -->
   <div class="card shadow p-4 mt-4">
@@ -120,5 +115,7 @@ while ($row = $submission_ids_result->fetch_assoc()) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<div id="toastContainer"></div>
+<?php include "pages/data-pages/toast.php"; ?>
 </body>
 </html>

@@ -22,5 +22,5 @@ foreach ($_POST as $key => $value) {
 
 $_SESSION['toastMsg'] = "Form submitted successfully!";
 $_SESSION['toastType'] = "success";
-header("Location: ../../dashboard.php");
+header("Location: dashboard.php");
 exit();
