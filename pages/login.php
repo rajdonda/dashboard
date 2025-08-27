@@ -1,10 +1,12 @@
 <?php
 session_start();
-include "db.php";
+include "data-pages/db.php";
+
 password_hash("Admin123!", PASSWORD_DEFAULT);
 $toastMsg = "";
 $toastType = "";
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST['action'] ?? '') === 'login') {
     $email    = trim($_POST["Email"] ?? "");
     $password = $_POST["Password"] ?? "";
@@ -29,12 +31,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST['action'] ?? '') === 'login
                 $_SESSION['role'] = $dbRole;
                 $_SESSION['toastMsg'] = "Login successful!";
                 $_SESSION['toastType'] = "success";
-
+                error_reporting(E_ALL);
+                          ini_set('display_errors', 1);
                 if ($dbRole === "admin") {
                     header("Location: admin_dashboard.php");
                     exit();
                 } else {
-                    header("Location: dashboard.php");
+                    header("Location: ../dashboard.php");
                     exit();
                 }
             } else {
@@ -56,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST['action'] ?? '') === 'login
   <meta name="viewport" content="width=device-width, initial-scale=1.0">    
   <title>Login-Page</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="shortcut icon" href="website.png" type="image/x-icon">
+  <link rel="shortcut icon" href="../assets/website.png" type="image/x-icon">
   
 </head>
 <body class="bg-light">
@@ -80,21 +83,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && ($_POST['action'] ?? '') === 'login
       </div>
     </form>
    <div class="mt-3">
-    <a href="#" onclick="document.getElementById('registerRedirectForm').submit(); return false;">
-        Don't have an account? -> Register
-    </a>
-    <form id="registerRedirectForm" action="register.php" method="POST" style="display:none;">
-        <input type="hidden" name="fromLogin" value="1">
-    </form>
-</div>
-
+      <a href="#" onclick="document.getElementById('registerRedirectForm').submit(); return false;">
+          Don't have an account? -> Register
+      </a>
+      <form id="registerRedirectForm" action="register.php" method="POST" style="display:none;">
+          <input type="hidden" name="fromLogin" value="1">
+      </form>
+    </div>
+  </div>
 </div>
 
 <div id="toastContainer"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <?php 
-  include "toast.php";
+  include "data-pages/toast.php";
 ?>
 </body>
 </html>

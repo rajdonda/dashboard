@@ -1,9 +1,10 @@
 <?php
 session_start();
-include "db.php";
+include "pages/data_pages/db.php";
+require_once __DIR__ . "/data-pages/db.php";
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'admin') {
-    header("Location: dashboard.php");
+    header("Location: ../dashboard.php");
     exit();
 }
 
@@ -11,19 +12,33 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'admin') {
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['add_field'])) {
     $field_name = trim($_POST['field_name']);
     $field_type = $_POST['field_type'];
+
+    if (!isset($_SESSION['user_id'])) {
+        die("Error: Admin not logged in.");
+    }
+
     $admin_id = $_SESSION['user_id'];
 
     if (!empty($field_name) && !empty($field_type)) {
-        $max_order = $mysqli->query("SELECT MAX(field_order) AS max_order FROM form_fields")->fetch_assoc()['max_order'];
-        $field_order = $max_order + 1;
+        $max_order_result = $mysqli->query("SELECT MAX(field_order) AS max_order FROM form_fields");
+        $max_order_row = $max_order_result->fetch_assoc();
+        $field_order = $max_order_row ? $max_order_row['max_order'] + 1 : 1;
 
         $stmt = $mysqli->prepare("INSERT INTO form_fields (field_name, field_type, created_by, field_order) VALUES (?, ?, ?, ?)");
+        if (!$stmt) {
+            die("SQL Error: " . $mysqli->error);
+        }
         $stmt->bind_param("ssii", $field_name, $field_type, $admin_id, $field_order);
-        $stmt->execute();
+
+        if (!$stmt->execute()) {
+            die("Execute Error: " . $stmt->error);
+        }
+
         header("Location: admin_dashboard.php");
         exit();
     }
 }
+
 
 // Delete field
 if (isset($_GET['delete'])) {
@@ -55,6 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_field'])) {
 <head>
 <meta charset="UTF-8">
 <title>Admin Dashboard</title>
+<link rel="shortcut icon" href="assets/website.png" type="image/x-icon">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -70,6 +86,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_field'])) {
 <div class="container mt-5">
     <div class="card shadow p-4 mb-4">
         <h2 class="mb-4">Welcome Admin, <?php echo htmlspecialchars($_SESSION['user']); ?> 👋</h2>
+        <div class="mb-4">
+    <form id="adminsubmissionRedirectForm" action="data-pages/admin_submissions.php" method="POST" style="display:none;">
+        <input type="hidden" name="fromLogin" value="1">
+    </form>
+
+    <button class="btn btn-outline-primary" onclick="document.getElementById('adminsubmissionRedirectForm').submit(); return false;">
+        📑 Go to Admin Submissions
+    </button>
+</div>
+
         <h4>Add New Form Field</h4>
         <form method="post">
             <div class="mb-3">
@@ -92,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_field'])) {
 
     <div class="card shadow p-4">
         <h4>Existing Fields</h4>
-        <form method="post" action="save_field_order.php" id="orderForm">
+        <form method="post" action="admin_dashboard.php" id="orderForm">
             <table class="table table-bordered mt-3" id="fieldsTable">
                 <thead>
                     <tr>
@@ -171,7 +197,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['edit_field'])) {
         </form>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 $(function() {

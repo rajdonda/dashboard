@@ -3,7 +3,7 @@ session_start();
 include "db.php";
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'admin') {
-    header("Location: dashboard.php");
+    header("Location: ../../dashboard.php");
     exit();
 }
 ?>
@@ -29,26 +29,25 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'admin') {
     </thead>
     <tbody>
       <?php
-      $query = "SELECT fr.*, u.username, ff.field_name 
-                FROM form_responses fr
-                JOIN cruddemo u ON fr.user_id = u.id
-                JOIN form_fields ff ON fr.field_id = ff.id
-                ORDER BY fr.submitted_at DESC";
+      $query = "SELECT s.*, u.username, f.field_name 
+          FROM user_submissions s
+          JOIN cruddemo u ON s.user_id = u.id
+          JOIN form_fields f ON s.field_id = f.id
+          ORDER BY s.created_at DESC";
       $result = $mysqli->query($query);
 
       while ($row = $result->fetch_assoc()) {
           echo "<tr>";
-          echo "<td>".htmlspecialchars($row['username'])."</td>";
-          echo "<td>".htmlspecialchars($row['field_name'])."</td>";
-          echo "<td>".htmlspecialchars($row['response_value'])."</td>";
-          echo "<td>".htmlspecialchars($row['submitted_at'])."</td>";
+                echo "<td>".htmlspecialchars($row['username'])."</td>";
+                echo "<td>".htmlspecialchars($row['field_name'])."</td>";
+                echo "<td>".htmlspecialchars($row['value'])."</td>";
+                echo "<td>".htmlspecialchars($row['created_at'])."</td>";
           echo "</tr>";
       }
       ?>
     </tbody>
   </table>
-
-  <a href="admin_dashboard.php" class="btn btn-primary mt-3">Back to Admin Dashboard</a>
+  <a href="../admin_dashboard.php" class="btn btn-primary mt-3">Back to Admin Dashboard</a>
 </div>
 
 </body>

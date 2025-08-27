@@ -2,8 +2,8 @@
 session_start();
 include "db.php";
 
-if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'admin') {
-    header("Location: dashboard.php");
+if ( !isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../dashboard.php");
     exit();
 }
 
@@ -16,4 +16,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order'])) {
     }
     header("Location: admin_dashboard.php");
     exit();
-}
+} 

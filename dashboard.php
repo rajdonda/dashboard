@@ -1,9 +1,8 @@
 <?php
 session_start();
-include "db.php";
-
+include "pages/data-pages/db.php";
 if (!isset($_SESSION['loggedin']) || $_SESSION['role'] !== 'user') {
-    header("Location: login.php");
+    header("Location: pages/login.php");
     exit();
 }
 
@@ -14,8 +13,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['submit_form'])) {
     foreach ($_POST as $key => $value) {
         if (str_starts_with($key, 'field_')) {
             $field_id = intval(str_replace('field_', '', $key));
-            $stmt = $mysqli->prepare("INSERT INTO user_submissions (user_id, field_id, value) VALUES (?, ?, ?)");
+            $stmt = $mysqli->prepare("INSERT INTO form_responses (user_id, field_id, response_value, submitted_at) VALUES (?, ?, ?, NOW())");
             $stmt->bind_param("iis", $user_id, $field_id, $value);
+
             $stmt->execute();
         }
     }
