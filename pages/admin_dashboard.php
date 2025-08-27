@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order'])) {
 
     <div class="container mt-5">
         <div class="card shadow p-4 mb-4">
-            <h2 class="mb-4">Welcome Admin, <?php echo htmlspecialchars($_SESSION['user']); ?> 👋</h2>
+            <h2 class="mb-4">Welcome To Admin Dashboard, <?php echo htmlspecialchars($_SESSION['user']); ?> 👋</h2>
             <div class="mb-4">
         <form id="adminsubmissionRedirectForm" action="data-pages/admin_submissions.php" method="POST" style="display:none;">
             <input type="hidden" name="fromLogin" value="1">
@@ -141,11 +141,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order'])) {
             <form method="post">
                 <div class="mb-3">
                     <label class="form-label">Field Name</label>
-                    <input type="text" class="form-control" name="field_name" >
+                    <input type="text" class="form-control" name="field_name" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Field Type</label>
-                    <select class="form-control" name="field_type" >
+                    <select class="form-control" name="field_type" required>
                         <option value="text">Text</option>
                         <option value="email">Email</option>
                         <option value="number">Number</option>
